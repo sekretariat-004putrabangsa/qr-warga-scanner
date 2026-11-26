@@ -87,7 +87,14 @@
       var cameras=await Html5Qrcode.getCameras();
       if(!cameras||!cameras.length)throw new Error('Kamera tidak ditemukan pada perangkat ini.');
       var camera=cameras.find(function(c){return /back|rear|environment|belakang/i.test(c.label);})||cameras[cameras.length-1];
-      await scanner.start(camera.id,{fps:12,qrbox:{width:240,height:240},aspectRatio:1.0},
+      await scanner.start(camera.id,{
+  fps:12,
+  qrbox:function(viewfinderWidth,viewfinderHeight){
+    var size=Math.floor(Math.min(viewfinderWidth,viewfinderHeight)*0.85);
+    return {width:size,height:size};
+  },
+  aspectRatio:1.0
+},
         function(decoded){
           if(locked)return;locked=true;
           var token=extractToken(decoded);
